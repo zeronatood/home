@@ -1,122 +1,471 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>โมเดลบ้านสวนมะนาว 2 ไร่</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>บ้านสวนมะนาว 3 มิติ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Mitr:wght@400;500&display=swap">
 <style>
-:root{--bg:#e8efe3;--panel:#fbfaf5;--ink:#22301f;--mute:#5d6b58;--acc:#3f7d2c;--line:#cfd8c6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10170e;--panel:#1a2318;--ink:#e8f0e2;--mute:#9db095;--acc:#8fd16f;--line:#2f3d2b}}
-:root[data-theme="dark"]{--bg:#10170e;--panel:#1a2318;--ink:#e8f0e2;--mute:#9db095;--acc:#8fd16f;--line:#2f3d2b}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans Thai',system-ui,sans-serif}
-#c{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.top{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
-.top h1{font-size:17px;margin:0;font-weight:700}
-.top p{margin:2px 0 0;font-size:12.5px;color:var(--mute)}
-.bar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:flex;gap:8px;flex-wrap:wrap}
-.bar button{flex:1 1 auto;font:600 13px 'Noto Sans Thai',system-ui,sans-serif;padding:11px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
-.bar button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.bar button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-#leg{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.7;max-width:46vw}
-#leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-#compass{position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 84px);width:44px;height:44px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700}
-#compass span{display:block;transition:transform .1s}
+/* Layout: full-height app. Header on top, 3D stage left, control panel right (stacked under the stage on phones). */
+:root{
+  --bg:#eef1e6; --panel:#f8f9f3; --fg:#1d2a1f; --muted:#52624f; --line:#d3dac6;
+  --accent:#2f6f3e; --accent-fg:#ffffff; --lemon:#9a7d00; --water:#2d7a9a; --stage:#dfe8d2;
+  --lbl-bg:rgba(248,249,243,.92); --lbl-fg:#1d2a1f;
+  --font-display:"Mitr","IBM Plex Sans Thai",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Thai","Noto Sans Thai",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101612; --panel:#17201a; --fg:#e6ede2; --muted:#9bad9f; --line:#2a372d;
+    --accent:#7fcf8e; --accent-fg:#0d1a10; --lemon:#e8c93a; --water:#6bbcdb; --stage:#0f1830;
+    --lbl-bg:rgba(23,32,26,.92); --lbl-fg:#e6ede2; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101612; --panel:#17201a; --fg:#e6ede2; --muted:#9bad9f; --line:#2a372d;
+  --accent:#7fcf8e; --accent-fg:#0d1a10; --lemon:#e8c93a; --water:#6bbcdb; --stage:#0f1830;
+  --lbl-bg:rgba(23,32,26,.92); --lbl-fg:#e6ede2; color-scheme:dark;
+}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg); font-family:var(--font-body); font-size:15px; line-height:1.5;
+  padding-block:0; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid; grid-template-rows:auto minmax(0,1fr); gap:10px; box-sizing:border-box;
+}
+header{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding-top:10px}
+h1{font-family:var(--font-display); font-weight:500; font-size:1.35rem; margin:0; text-wrap:balance}
+header p{margin:0; color:var(--muted); font-size:.85rem}
+main{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:12px; min-height:0; padding-bottom:12px}
+#stage{position:relative; min-height:0; border-radius:10px; overflow:hidden; background:var(--stage); border:1px solid var(--line)}
+#stage canvas{position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none}
+#labels{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+.lbl{position:absolute; left:0; top:0; background:var(--lbl-bg); color:var(--lbl-fg); font-size:.75rem; font-weight:500; padding:2px 8px; border-radius:999px; white-space:nowrap; box-shadow:0 1px 3px rgba(0,0,0,.25); will-change:transform}
+.lbl[hidden]{display:none}
+#compass{position:absolute; right:10px; top:10px; width:54px; height:54px; border-radius:50%; background:var(--lbl-bg); border:1px solid var(--line); display:grid; place-items:center; color:var(--lbl-fg)}
+#compass svg{width:40px; height:40px; transition:none}
+#hint{position:absolute; left:10px; bottom:10px; font-size:.75rem; color:var(--lbl-fg); background:var(--lbl-bg); padding:3px 9px; border-radius:999px}
+#fallback{position:absolute; inset:0; display:grid; place-items:center; padding:24px; text-align:center}
+aside{min-height:0; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:18px}
+aside h2{font-family:var(--font-display); font-weight:500; font-size:.95rem; margin:0 0 8px; letter-spacing:.01em}
+.row{display:flex; flex-wrap:wrap; gap:8px}
+.btn{font:inherit; font-size:.85rem; min-height:44px; padding:0 14px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--fg); cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent); color:var(--accent-fg); border-color:var(--accent)}
+.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.timebox{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
+#clock{font-family:var(--font-display); font-size:1.6rem; font-variant-numeric:tabular-nums}
+#sunnote{margin:2px 0 8px; font-size:.85rem; color:var(--muted)}
+input[type=range]{width:100%; min-height:32px; accent-color:var(--accent)}
+.check{display:flex; align-items:center; gap:10px; min-height:44px; font-size:.9rem}
+.check input{width:20px; height:20px; accent-color:var(--accent)}
+table{width:100%; border-collapse:collapse; font-size:.85rem; font-variant-numeric:tabular-nums}
+th,td{text-align:left; padding:6px 0; border-bottom:1px solid var(--line); vertical-align:top}
+td:last-child,th:last-child{text-align:right; white-space:nowrap; padding-left:10px}
+th{font-weight:500; color:var(--muted); font-size:.75rem}
+tfoot td{font-weight:600; border-bottom:0}
+.note{font-size:.78rem; color:var(--muted); margin:0}
+@media (max-width:820px){
+  main{grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) minmax(0,42%)}
+}
+@media (prefers-reduced-motion: reduce){ *{scroll-behavior:auto} }
 </style>
-</head>
-<body>
-<canvas id="c"></canvas>
-<div class="top"><h1>บ้านสวนมะนาว 2 ไร่</h1><p>หน้ากว้าง 40 ม. ลึก 80 ม. · หน้าบ้านหันทิศตะวันออก (ด้านล่างของภาพ) · ลากเพื่อหมุน</p></div>
-<div id="compass"><span id="n">N</span></div>
-<div id="leg">
-<i style="background:#e2c64a"></i>มะนาว 20 ต้น<br>
-<i style="background:#f4f1ea;border:1px solid #888"></i>บ้านหลัก 1 หลัง<br>
-<i style="background:#c9a77a"></i>บ้านเช่า 5 หลัง<br>
-<i style="background:#4aa3c7"></i>สระ + คูน้ำรูปตัว L<br>
-<i style="background:#e0872e"></i>ไม้ผลด้านใต้
-</div>
-<div class="bar">
-<button data-v="air" class="on">มุมสูง</button>
-<button data-v="east">หน้าบ้าน (ตะวันออก)</button>
-<button data-v="walk">เดินในสวน</button>
-<button data-v="spin">หมุนอัตโนมัติ</button>
-</div>
+
+<header>
+  <h1>บ้านสวนมะนาว 2 ไร่</h1>
+  <p>แบบจำลอง 3 มิติ · ที่ดิน 40 × 80 ม. · หน้าบ้านหันทิศตะวันออก</p>
+</header>
+<main>
+  <section id="stage" aria-label="แบบจำลอง 3 มิติของที่ดิน หมุนและซูมได้">
+    <div id="labels"></div>
+    <div id="compass" aria-label="เข็มทิศ" title="ทิศเหนือ">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><g id="needle"><path d="M20 3 L26 20 L20 17 L14 20 Z" fill="#d9503c"/><path d="M20 37 L26 20 L20 23 L14 20 Z" fill="currentColor" opacity=".45"/><text x="20" y="14" font-size="7" text-anchor="middle" fill="#fff" font-weight="600">N</text></g></svg>
+    </div>
+    <div id="hint">ลากเพื่อหมุน · บีบนิ้วหรือเลื่อนล้อเพื่อซูม</div>
+    <div id="fallback" hidden><p>เบราว์เซอร์นี้เปิดภาพ 3 มิติ (WebGL) ไม่ได้ ลองเปิดด้วย Chrome หรือ Safari รุ่นใหม่</p></div>
+  </section>
+
+  <aside>
+    <div>
+      <h2>แสงแดดตามเวลา</h2>
+      <div class="timebox"><span id="clock">10:00</span><span class="note">ตุลาคม · ไทย</span></div>
+      <p id="sunnote"></p>
+      <input id="time" type="range" min="6.5" max="17.5" step="0.25" value="10" aria-label="เวลาในวัน">
+      <div class="row" style="margin-top:8px">
+        <button class="btn" data-t="7.5">เช้า 07:30</button>
+        <button class="btn" data-t="12">เที่ยง</button>
+        <button class="btn" data-t="16.5">เย็น 16:30</button>
+        <button class="btn" data-t="18.25" id="nightbtn">ค่ำ</button>
+      </div>
+    </div>
+
+    <div>
+      <h2>มุมมอง</h2>
+      <div class="row" id="views">
+        <button class="btn" data-v="aerial" aria-pressed="true">ภาพรวม</button>
+        <button class="btn" data-v="top" aria-pressed="false">มุมสูง</button>
+        <button class="btn" data-v="front" aria-pressed="false">หน้าบ้าน (ตะวันออก)</button>
+        <button class="btn" data-v="orchard" aria-pressed="false">สวนมะนาว</button>
+        <button class="btn" data-v="pond" aria-pressed="false">สระน้ำ</button>
+        <button class="btn" data-v="rent" aria-pressed="false">บ้านเช่า</button>
+      </div>
+    </div>
+
+    <div>
+      <h2>แสดง / ซ่อน</h2>
+      <label class="check"><input type="checkbox" id="tg-lemon" checked> ต้นมะนาว</label>
+      <label class="check"><input type="checkbox" id="tg-fruit" checked> ไม้ผลอื่น ๆ</label>
+      <label class="check"><input type="checkbox" id="tg-rent" checked> บ้านเช่า</label>
+      <label class="check"><input type="checkbox" id="tg-lbl" checked> ป้ายชื่อ</label>
+    </div>
+
+    <div>
+      <h2>การใช้พื้นที่</h2>
+      <table>
+        <thead><tr><th>ส่วน</th><th>ตร.ว.</th></tr></thead>
+        <tbody id="areas"></tbody>
+        <tfoot><tr><td>ที่ดินทั้งหมด (2 ไร่)</td><td>800</td></tr></tfoot>
+      </table>
+    </div>
+
+    <p class="note">ผังนี้ตีความจากสเก็ตช์และคำอธิบาย: คูน้ำรูปตัว L อยู่ริมตะวันออกและเลี้ยวไปทางใต้ ถนนใหญ่อยู่ฝั่งตะวันออก ถนนกว้าง 5 ม. อยู่ด้านใต้ ตำแหน่งและขนาดอาคารเป็นการจัดวางเบื้องต้น ปรับได้</p>
+  </aside>
+</main>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-const T=THREE,cv=document.getElementById('c');
-const R=new T.WebGLRenderer({canvas:cv,antialias:true});
-R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;
-const S=new T.Scene();S.background=new T.Color(0xcfe6f2);S.fog=new T.Fog(0xcfe6f2,160,380);
-const cam=new T.PerspectiveCamera(50,1,.5,600);
-S.add(new T.HemisphereLight(0xffffff,0x6a8a55,.85));
-const sun=new T.DirectionalLight(0xfff2d8,.9);sun.position.set(60,90,-30);sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-70;sc.right=70;sc.top=70;sc.bottom=-70;sc.far=250;S.add(sun);
-function box(w,h,d,c,x,y,z,o){const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial(Object.assign({color:c},o||{})));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;S.add(m);return m}
-// พื้นที่: x ตะวันออก(+) ตะวันตก(-), z ใต้(+) เหนือ(-)
-box(500,.2,500,0x7fa060,0,-.2,0);
-box(40,.3,80,0x8cb86a,0,0,0);
-// คูน้ำตัว L + ถนน 5 ม. ทิศตะวันออกและใต้
-const wo={transparent:true,opacity:.85};
-box(2.5,.3,82.5,0x4aa3c7,21.25,-.05,1.25,wo);
-box(42.5,.3,2.5,0x4aa3c7,1.25,-.05,41.25,wo);
-box(50,.25,5,0x55585c,5,0,46);
-for(let x=-18;x<30;x+=6)box(2.5,.05,.3,0xf2f2f2,x,.2,46);
-// ถนนทางเข้าในที่ดิน (ซ้าย) + สะพาน + เสาประตู
-box(4,.2,80,0x6d6f73,-18,.1,0);
-for(let z=-38;z<40;z+=6)box(.25,.03,2.5,0xf2f2f2,-18,.22,z);
-box(4,.3,2.6,0x8a8a8a,-18,.05,41.2);
-box(1,2.2,1,0x9a7650,-20.2,1.1,39.5);box(1,2.2,1,0x9a7650,-15.8,1.1,39.5);
-// ต้นไม้
-function tree(x,z,leaf,s){s=s||1;box(.35*s,1.6*s,.35*s,0x6b4a2b,x,.8*s,z);
-const m=new T.Mesh(new T.SphereGeometry(1.3*s,12,10),new T.MeshLambertMaterial({color:leaf}));m.position.set(x,2.4*s,z);m.castShadow=true;S.add(m);
-return m}
-for(let r=0;r<4;r++)for(let c=0;c<5;c++){const t=tree(-8+c*6,-37+r*5.5,0x3f8a34,.9);
-const f=new T.Mesh(new T.SphereGeometry(.2,6,6),new T.MeshLambertMaterial({color:0xe2c64a}));f.position.set(-8+c*6+.9,2.1,-37+r*5.5+.5);S.add(f);
-const g=f.clone();g.position.set(-8+c*6-.8,2.8,-37+r*5.5-.5);S.add(g)}
-for(let c=0;c<5;c++){tree(-8+c*6,31,0x2f7a3a,1.1);tree(-5+c*6,36,[0xe0872e,0xc8402e,0xe8b830,0x9a3f7a,0xe0872e][c],1)}
-for(let z=-36;z<38;z+=9)tree(-22.5,z,0x4a9a3a,1.2);
-// บ้านสไตล์โมเดิร์นทรอปิคอล หันหน้าไปทางตะวันออก (+x)
-function home(x,z,w,d,h,col){box(w,h,d,col,x,h/2,z);
-box(w+2.4,.35,d+2.4,0x6b4a2b,x,h+.2,z);
-box(w+1.6,.4,d+1.6,0xb8b8b4,x,h+.55,z,{});
-box(w*.7,h*.62,.15,0x2a4a5e,x,h*.4,z+d/2+.05,{transparent:true,opacity:.8});
-box(w+.6,.2,2.2,0xa9835a,x,.1,z+d/2+1.1);
-box(.2,h,.2,0x6b4a2b,x-w/2+.3,h/2,z+d/2+2.1);box(.2,h,.2,0x6b4a2b,x+w/2-.3,h/2,z+d/2+2.1)}
-home(4,-10,12,8,3.4,0xf4f1ea);
-[[-6,3],[-6,15],[16,3],[16,15],[16,26]].forEach(p=>home(p[0],p[1],6,5,2.8,0xc9a77a));
-// สระน้ำ + ศาลา
-box(11,.25,15,0xb8b8b4,4,.1,10);box(10,.3,14,0x4aa3c7,4,.15,10,wo);
-box(4,.2,3,0xa9835a,4,.1,1.5);box(4.6,.25,3.6,0x6b4a2b,4,2.6,1.5);
-[[2.2,.2],[5.8,.2],[2.2,2.8],[5.8,2.8]].forEach(p=>box(.2,2.5,.2,0x6b4a2b,p[0],1.3,p[1]));
-// ที่จอดรถข้างถนนทางเข้า
-const cc=[0xd04a3c,0x3c6ed0,0xe8e8e8,0x333333];
-cc.forEach((c,i)=>{const z=-2+i*4.5;box(2,.8,4,c,-13.5,.6,z);box(1.7,.7,2,0xbfd8e6,-13.5,1.3,z)});
-box(5,.1,20,0xaaa9a4,-13.5,.07,5);
-function lab(t,x,z,c){const k=document.createElement('canvas');k.width=512;k.height=96;const g=k.getContext('2d');g.fillStyle=c;g.fillRect(0,0,512,96);g.fillStyle='#fff';g.font='bold 44px sans-serif';g.textAlign='center';g.fillText(t,256,64);const s=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(k)}));s.scale.set(16,3,1);s.position.set(x,5,z);S.add(s)}
-lab('ตะวันออก · หน้าบ้าน',0,53,'#3f7d2c');lab('ตะวันตก',0,-45,'#666');lab('เหนือ',34,0,'#666');lab('ใต้',-34,0,'#666');
-// กล้อง (orbit เอง)
-let tg=new T.Vector3(0,0,5),th=1.5708,ph=.9,di=105,spin=false,goal=null;
-function place(){cam.position.set(tg.x+di*Math.sin(ph)*Math.cos(th),tg.y+di*Math.cos(ph),tg.z+di*Math.sin(ph)*Math.sin(th));cam.lookAt(tg);
-document.getElementById('n').style.transform='rotate('+(90-(th-Math.PI/2)*180/Math.PI)+'deg)'}
-const V={air:{th:1.5708,ph:.9,di:105,t:[0,0,5]},east:{th:1.5708,ph:1.3,di:90,t:[0,3,0]},walk:{th:1.5708,ph:1.42,di:30,t:[0,2,15]}};
-function go(k){spin=false;goal=V[k]}
-document.querySelectorAll('.bar button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bar button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-if(b.dataset.v==='spin'){spin=true;goal=null}else go(b.dataset.v)});
-const pts=new Map();let pd=0;
-cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,e);goal=null});
-cv.addEventListener('pointerup',e=>pts.delete(e.pointerId));
-cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
-if(pts.size===1){th-=(e.clientX-p.clientX)*.006;ph=Math.min(1.5,Math.max(.15,ph-(e.clientY-p.clientY)*.006))}
-pts.set(e.pointerId,e);
-if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pd)di=Math.min(180,Math.max(10,di*pd/d));pd=d}else pd=0});
-cv.addEventListener('wheel',e=>{e.preventDefault();di=Math.min(180,Math.max(10,di*(1+e.deltaY*.001)))},{passive:false});
-function rs(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
-addEventListener('resize',rs);rs();
-(function loop(){requestAnimationFrame(loop);
-if(spin)th+=.004;
-if(goal){th+=(goal.th-th)*.06;ph+=(goal.ph-ph)*.06;di+=(goal.di-di)*.06;tg.x+=(goal.t[0]-tg.x)*.06;tg.y+=(goal.t[1]-tg.y)*.06;tg.z+=(goal.t[2]-tg.z)*.06}
-place();R.render(S,cam)})();
+(function(){
+  var stage=document.getElementById('stage');
+  var labelsEl=document.getElementById('labels');
+  var renderer;
+  try{
+    if(!window.THREE||!THREE.OrbitControls) throw new Error('no three');
+    renderer=new THREE.WebGLRenderer({antialias:true});
+  }catch(e){ document.getElementById('fallback').hidden=false; return; }
+
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(45,1,1,520);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  stage.insertBefore(renderer.domElement,stage.firstChild);
+
+  var controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true; controls.dampingFactor=.08;
+  controls.maxPolarAngle=Math.PI/2-0.03; controls.minDistance=8; controls.maxDistance=230;
+
+  /* ---------- helpers ---------- */
+  function mat(c,r){ return new THREE.MeshStandardMaterial({color:c,roughness:r===undefined?.9:r,metalness:0}); }
+  function box(w,h,d,m,x,y,z,parent,cast){
+    var o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); o.position.set(x,y,z);
+    o.castShadow=cast!==false; o.receiveShadow=true; (parent||scene).add(o); return o;
+  }
+  function flat(w,d,color,x,z,layer,parent){
+    var m=mat(color,1); m.polygonOffset=true; m.polygonOffsetFactor=-layer; m.polygonOffsetUnits=-layer;
+    var o=new THREE.Mesh(new THREE.PlaneGeometry(w,d),m);
+    o.rotation.x=-Math.PI/2; o.position.set(x,layer*0.015,z); o.receiveShadow=true; (parent||scene).add(o); return o;
+  }
+  function ellipse(rx,rz,color,x,z,layer){
+    var m=mat(color,.35); m.polygonOffset=true; m.polygonOffsetFactor=-layer; m.polygonOffsetUnits=-layer;
+    var o=new THREE.Mesh(new THREE.CircleGeometry(1,48),m);
+    o.scale.set(rx,rz,1); o.rotation.x=-Math.PI/2; o.position.set(x,layer*0.015,z); o.receiveShadow=true; scene.add(o); return o;
+  }
+  var rnd=(function(){var s=7; return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; };})();
+
+  /* ---------- lights ---------- */
+  var hemi=new THREE.HemisphereLight(0xdfeeff,0x7a8a5a,.8); scene.add(hemi);
+  var sun=new THREE.DirectionalLight(0xfff4e0,1);
+  sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+  var sc=sun.shadow.camera; sc.left=-70; sc.right=70; sc.top=70; sc.bottom=-70; sc.near=10; sc.far=330;
+  sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.06;
+  scene.add(sun); scene.add(sun.target);
+
+  /* ---------- ground, plot, roads, canal ---------- */
+  var ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),mat(0x86a55a));
+  ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+
+  flat(40,80,0xa6c26c,0,0,1);                        // the plot lawn
+  // east canal (x 20..23) and south arm (z 45..48): L shape
+  flat(3.8,500,0x6f6a52,21.5,-202+0,2);              // rim, east
+  flat(3,500,0x3f89a6,21.5,-202,3);
+  flat(500,3.8,0x6f6a52,-227,46.5,2);
+  flat(500,3,0x3f89a6,-227,46.5,3);
+  // roads
+  flat(12,500,0x3c3f44,29,0,4);                      // big road, east
+  flat(500,5,0x3c3f44,-227,42.5,5);                  // 5 m road, south (ends at big road)
+  var i;
+  for(i=-120;i<120;i+=6) flat(.25,3,0xe8e4d0,29,i,6);       // dashes east road
+  for(i=-120;i<20;i+=5) flat(3,.2,0xe8e4d0,i,42.5,6);       // dashes south road
+  // west driveway + parking pad
+  flat(4.5,80,0xa39c8b,-17.75,0,2);
+  for(i=-38;i<40;i+=4) flat(.18,1.6,0xefeadb,-17.75,i,3);
+  flat(4.6,13.5,0xb9b2a0,-13.25,4.5,3);
+  // front path from the east gate to the main house, and lanes to the rentals
+  flat(5,2,0xcbc4b1,17.5,0,3);
+  flat(2.4,32,0xcbc4b1,18,22,3);
+  flat(2.4,18,0xcbc4b1,7.6,29,3);
+  flat(8,1.4,0xcbc4b1,12,6,3);
+
+  /* ---------- fence ---------- */
+  var postM=mat(0x7a5a3a), railM=mat(0x9a7a52);
+  function fence(x1,z1,x2,z2){
+    var dx=x2-x1,dz=z2-z1,len=Math.sqrt(dx*dx+dz*dz),ang=Math.atan2(dx,dz);
+    var cx=(x1+x2)/2,cz=(z1+z2)/2;
+    [0.45,0.95].forEach(function(y){ var r=box(.07,.07,len,railM,cx,y,cz,scene,false); r.rotation.y=ang; });
+    var n=Math.max(1,Math.round(len/4));
+    for(var k=0;k<=n;k++){ var px=x1+dx*k/n,pz=z1+dz*k/n; box(.14,1.15,.14,postM,px,.575,pz,scene,false); }
+  }
+  fence(-20,-40,20,-40); fence(-20,-40,-20,40);
+  fence(20,-40,20,-2.5); fence(20,2.5,20,40);
+  fence(-15.75,40,20,40);
+
+  // bridge over the east canal
+  var wood=mat(0x8a6b45);
+  box(3.8,.22,3.2,wood,21.5,.12,0,scene);
+  box(3.8,.7,.1,wood,21.5,.55,-1.55,scene,false); box(3.8,.7,.1,wood,21.5,.55,1.55,scene,false);
+  box(.2,1.5,.2,postM,20,.75,-2.2,scene,false); box(.2,1.5,.2,postM,20,.75,2.2,scene,false);
+  box(.2,.12,4.6,postM,20,1.5,0,scene,false);
+
+  /* ---------- buildings ---------- */
+  var glassMat=new THREE.MeshStandardMaterial({color:0x9cc3d8,roughness:.2,metalness:.1,emissive:0xffcf80,emissiveIntensity:0});
+  function house(parent,x,z,w,d,h,rh,wallC,roofC,doorC){
+    var g=new THREE.Group(); g.position.set(x,0,z); parent.add(g);
+    box(w,h,d,mat(wallC,.95),0,h/2,0,g);
+    var s=new THREE.Shape(); var ov=.6;
+    s.moveTo(-d/2-ov,0); s.lineTo(d/2+ov,0); s.lineTo(0,rh); s.closePath();
+    var len=w+2*ov;
+    var geo=new THREE.ExtrudeGeometry(s,{depth:len,bevelEnabled:false});
+    geo.translate(0,0,-len/2); geo.rotateY(Math.PI/2);
+    var roof=new THREE.Mesh(geo,mat(roofC,.8)); roof.position.y=h; roof.castShadow=true; roof.receiveShadow=true; g.add(roof);
+    box(.08,2.1,1.1,mat(doorC),w/2+.03,1.05,0,g,false);
+    var wz=d>6?[-d/3,d/3]:[-d/2+1.0,d/2-1.0];
+    wz.forEach(function(zz){ box(.08,1.1,1.0,glassMat,w/2+.03,1.6,zz,g,false); box(.08,1.1,1.0,glassMat,-w/2-.03,1.6,zz,g,false); });
+    [-w/4,w/4].forEach(function(xx){ box(1.0,1.1,.08,glassMat,xx,1.6,d/2+.03,g,false); box(1.0,1.1,.08,glassMat,xx,1.6,-d/2-.03,g,false); });
+    return g;
+  }
+  var mainGroup=new THREE.Group(); scene.add(mainGroup);
+  var mh=house(mainGroup,10,0,11,9,3.2,2.4,0xf0e8d6,0x3b4a52,0x6b4a2d);
+  box(2.8,.14,5.2,mat(0x3b4a52),w2(11)+1.4,3,0,mh); function w2(w){return w/2;}
+  box(.18,3,.18,postM,5.5+2.6,1.5,-2.3,mh,true); box(.18,3,.18,postM,5.5+2.6,1.5,2.3,mh,true);
+  box(2.6,.15,5,mat(0xcbc4b1),5.5+1.3,.08,0,mh,false);
+
+  var rentGroup=new THREE.Group(); scene.add(rentGroup);
+  var rentPos=[[12,14],[12,24],[12,33],[3,26],[3,34]];
+  rentPos.forEach(function(p){
+    var rg=house(rentGroup,p[0],p[1],6,5,2.8,1.6,0xf4efe2,0xb4673a,0x4d6a5a);
+    box(.8,.15,1.8,mat(0xcbc4b1),3.5,.08,0,rg,false);
+  });
+
+  /* ---------- pond ---------- */
+  ellipse(7.9,9.9,0xb9b29b,-2,8,6);
+  var pondWater=ellipse(7,9,0x3f89a6,-2,8,7);
+  pondWater.material.roughness=.15; pondWater.material.metalness=.2;
+  box(3.4,.18,1.3,wood,4.6,.2,8,scene);
+  box(.14,.9,.14,postM,6.1,.45,7.4,scene,false); box(.14,.9,.14,postM,6.1,.45,8.6,scene,false);
+
+  /* ---------- trees ---------- */
+  var trunkM=mat(0x6b4a2d), leafM=mat(0x3f7a3a,.95), leafM2=mat(0x4b8a42,.95), fruitM=mat(0xe9cf2a,.6);
+  // lemon orchard (instanced): 8 columns x 7 rows at 4 m spacing
+  var lemonPos=[]; var cx,cz;
+  for(cz=-36;cz<=-12;cz+=4) for(cx=-13;cx<=15;cx+=4) lemonPos.push([cx+(rnd()-.5)*.5,cz+(rnd()-.5)*.5]);
+  var N=lemonPos.length, FP=9;
+  var iTrunk=new THREE.InstancedMesh(new THREE.CylinderGeometry(.1,.17,1.5,6),trunkM,N);
+  var iCan1=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1.3,1),leafM,N);
+  var iCan2=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.9,1),leafM2,N);
+  var iFruit=new THREE.InstancedMesh(new THREE.SphereGeometry(.11,6,5),fruitM,N*FP);
+  var dm=new THREE.Object3D(), t, f, fi=0;
+  for(t=0;t<N;t++){
+    var s=.9+rnd()*.3, p=lemonPos[t], ry=rnd()*6.28;
+    dm.position.set(p[0],.75*s,p[1]); dm.rotation.set(0,ry,0); dm.scale.set(s,s,s); dm.updateMatrix(); iTrunk.setMatrixAt(t,dm.matrix);
+    dm.position.set(p[0],2.3*s,p[1]); dm.scale.set(s,s*.85,s); dm.updateMatrix(); iCan1.setMatrixAt(t,dm.matrix);
+    dm.position.set(p[0]+.7*s,2.7*s,p[1]+.2*s); dm.scale.set(s,s*.9,s); dm.updateMatrix(); iCan2.setMatrixAt(t,dm.matrix);
+    for(f=0;f<FP;f++){
+      var th=rnd()*6.28, ph=Math.acos(2*rnd()-1)*.8+.3, R=1.32*s;
+      dm.position.set(p[0]+R*Math.sin(ph)*Math.cos(th),2.3*s+R*.85*Math.cos(ph)-.1,p[1]+R*Math.sin(ph)*Math.sin(th));
+      dm.rotation.set(0,0,0); dm.scale.set(1,1.2,1); dm.updateMatrix(); iFruit.setMatrixAt(fi++,dm.matrix);
+    }
+  }
+  [iTrunk,iCan1,iCan2].forEach(function(m){ m.castShadow=true; m.receiveShadow=true; });
+  var lemonGroup=new THREE.Group(); lemonGroup.add(iTrunk,iCan1,iCan2,iFruit); scene.add(lemonGroup);
+
+  // other fruit trees: mango, guava, banana
+  var fruitGroup=new THREE.Group(); scene.add(fruitGroup);
+  function roundTree(parent,x,z,trunkH,trunkR,canR,color,fruitC,fruitN){
+    var g=new THREE.Group(); g.position.set(x,0,z); parent.add(g);
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(trunkR*.8,trunkR,trunkH,7),trunkM); tr.position.y=trunkH/2; tr.castShadow=true; g.add(tr);
+    var cn=new THREE.Mesh(new THREE.IcosahedronGeometry(canR,1),mat(color,.95)); cn.position.y=trunkH+canR*.7; cn.scale.y=.85; cn.castShadow=true; cn.receiveShadow=true; g.add(cn);
+    var fm=mat(fruitC,.6);
+    for(var k=0;k<fruitN;k++){
+      var th=rnd()*6.28, ph=Math.acos(2*rnd()-1)*.8+.3;
+      var fr=new THREE.Mesh(new THREE.SphereGeometry(.16,6,5),fm);
+      fr.position.set(canR*Math.sin(ph)*Math.cos(th),trunkH+canR*.7+canR*.85*Math.cos(ph)-.1,canR*Math.sin(ph)*Math.sin(th)); g.add(fr);
+    }
+    return g;
+  }
+  [[-12,-8,'m'],[-4,-8,'g'],[4,-8,'m'],[12,-8,'g'],[-12,22,'g'],[-16,30,'m']].forEach(function(p){
+    if(p[2]==='m') roundTree(fruitGroup,p[0],p[1],2,.3,2.6,0x2e5e34,0xe9953a,7);
+    else roundTree(fruitGroup,p[0],p[1],1.4,.2,1.6,0x5e9a45,0xc9d86a,6);
+  });
+  function banana(parent,x,z){
+    var g=new THREE.Group(); g.position.set(x,0,z); parent.add(g);
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,2.6,7),mat(0x8bb35a)); tr.position.y=1.3; tr.castShadow=true; g.add(tr);
+    for(var k=0;k<6;k++){
+      var lf=new THREE.Mesh(new THREE.BoxGeometry(.5,.04,2.6),mat(0x5c9c3c));
+      var a=k/6*Math.PI*2; lf.position.set(Math.cos(a)*1.0,2.7,Math.sin(a)*1.0); lf.rotation.y=-a+Math.PI/2; lf.rotation.x=.35; lf.castShadow=true; g.add(lf);
+      lf.rotation.order='YXZ';
+    }
+  }
+  [[17,-7],[18,-4],[-8,26],[-9.5,28]].forEach(function(p){ banana(fruitGroup,p[0],p[1]); });
+
+  // background trees beyond the boundary roads
+  function plainTree(x,z,s){
+    var g=new THREE.Group(); g.position.set(x,0,z);
+    var tr=new THREE.Mesh(new THREE.CylinderGeometry(.2*s,.3*s,2.4*s,6),trunkM); tr.position.y=1.2*s; tr.castShadow=true; g.add(tr);
+    var cn=new THREE.Mesh(new THREE.IcosahedronGeometry(2*s,1),mat(0x4d8a45,.95)); cn.position.y=3.6*s; cn.castShadow=true; g.add(cn);
+    scene.add(g);
+  }
+  for(i=0;i<26;i++){ plainTree(40+rnd()*45,-100+rnd()*190,.8+rnd()*.7); }
+  for(i=0;i<22;i++){ plainTree(-70+rnd()*125,56+rnd()*45,.8+rnd()*.7); }
+  for(i=0;i<14;i++){ plainTree(-60-rnd()*40,-80+rnd()*140,.8+rnd()*.7); }
+
+  // cars on the parking pad (west side)
+  function car(x,z,color){
+    var g=new THREE.Group(); g.position.set(x,0,z);
+    box(4.2,.7,1.8,mat(color,.4),0,.65,0,g); box(2.2,.65,1.6,mat(color,.4),-.2,1.3,0,g);
+    box(.06,.5,1.4,glassMat,.9,1.3,0,g,false);
+    var wm=mat(0x1e1e1e);
+    [[-1.3,-.9],[-1.3,.9],[1.3,-.9],[1.3,.9]].forEach(function(w){
+      var c=new THREE.Mesh(new THREE.CylinderGeometry(.33,.33,.25,12),wm); c.rotation.x=Math.PI/2; c.position.set(w[0],.33,w[1]); g.add(c);
+    });
+    scene.add(g);
+  }
+  car(-13.2,0,0xc9453b); car(-13.2,3,0x3a6ea5); car(-13.2,6,0xe8e8e8); car(-13.2,9,0x3d3d44);
+
+  /* ---------- labels ---------- */
+  var labelDefs=[
+    {t:'บ้านหลัก',p:[10,5.2,0]},
+    {t:'บ้านเช่า 1',p:[12,3.8,14],g:'rent'},{t:'บ้านเช่า 2',p:[12,3.8,24],g:'rent'},{t:'บ้านเช่า 3',p:[12,3.8,33],g:'rent'},
+    {t:'บ้านเช่า 4',p:[3,3.8,26],g:'rent'},{t:'บ้านเช่า 5',p:[3,3.8,34],g:'rent'},
+    {t:'สวนมะนาว',p:[1,5,-24],g:'lemon'},
+    {t:'สระน้ำ',p:[-2,1,8]},
+    {t:'ที่จอดรถ',p:[-13,3,4.5]},
+    {t:'ถนนใหญ่ (ตะวันออก)',p:[29,1.5,-20]},
+    {t:'ถนนกว้าง 5 ม. (ใต้)',p:[-6,1.5,42.5]},
+    {t:'คูน้ำรูปตัว L',p:[21.5,1,-30]},
+    {t:'ประตูหน้า',p:[21.5,2.4,0]}
+  ];
+  labelDefs.forEach(function(d){
+    var el=document.createElement('div'); el.className='lbl'; el.textContent=d.t; labelsEl.appendChild(el);
+    d.el=el; d.v=new THREE.Vector3(d.p[0],d.p[1],d.p[2]);
+  });
+
+  /* ---------- sun & sky ---------- */
+  var skyDay=new THREE.Color(0x8cc6ec), skyDawn=new THREE.Color(0xf0b78a), skyNight=new THREE.Color(0x0f1830), tmp=new THREE.Color();
+  var clockEl=document.getElementById('clock'), noteEl=document.getElementById('sunnote'), timeEl=document.getElementById('time');
+  scene.fog=new THREE.Fog(0x8cc6ec,170,420); scene.background=new THREE.Color(0x8cc6ec);
+  function applySun(h){
+    var a=(h-6)/12*Math.PI, e=Math.sin(a);
+    var dir=new THREE.Vector3(Math.cos(a),e,Math.sin(a)*.3).normalize();
+    var night=h>17.9||h<6.1;
+    sun.position.copy(dir).multiplyScalar(160);
+    var el=Math.max(e,0);
+    sun.intensity=night?0.05:.15+1.15*Math.min(1,el*2.2);
+    sun.color.setHex(0xffffff).lerp(new THREE.Color(0xffa66b),Math.max(0,1-el*3.2));
+    hemi.intensity=night?.22:.45+.4*el;
+    var k=Math.min(1,el*3);
+    tmp.copy(skyNight).lerp(skyDawn,Math.min(1,k*2)); if(k>.5) tmp.copy(skyDawn).lerp(skyDay,(k-.5)*2);
+    if(night) tmp.copy(skyNight);
+    scene.background.copy(tmp); scene.fog.color.copy(tmp);
+    glassMat.emissiveIntensity=(night||h>17.2)?.9:0;
+    var hh=Math.floor(h), mm=Math.round((h-hh)*60); if(mm===60){hh++;mm=0;}
+    clockEl.textContent=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+    noteEl.textContent=night?'ตอนค่ำ ไฟในบ้านเปิด'
+      :(h<10.5?'แดดมาจากทิศตะวันออก หน้าบ้านและสวนฝั่งตะวันออกได้แดดเช้า'
+      :(h<13.5?'แดดเกือบตั้งฉาก เอียงมาทางทิศใต้เล็กน้อย เงาสั้นที่สุด'
+      :'แดดมาจากทิศตะวันตก หน้าบ้านทิศตะวันออกอยู่ในร่มเงา'));
+  }
+  timeEl.addEventListener('input',function(){ applySun(parseFloat(timeEl.value)); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-t]'),function(b){
+    b.addEventListener('click',function(){ var v=parseFloat(b.getAttribute('data-t')); timeEl.value=Math.min(v,17.5); applySun(v); });
+  });
+  applySun(10);
+
+  /* ---------- camera views ---------- */
+  var views={
+    aerial:{p:[78,48,58],t:[2,0,2]},
+    top:{p:[0,128,.01],t:[0,0,0]},
+    front:{p:[66,11,0],t:[8,2,0]},
+    orchard:{p:[2,9,-4],t:[2,2.5,-26]},
+    pond:{p:[-6,13,34],t:[-2,0,8]},
+    rent:{p:[26,14,44],t:[9,1.5,26]}
+  };
+  var goal=null;
+  function setView(name,instant){
+    var v=views[name]; if(!v) return;
+    goal={p:new THREE.Vector3(v.p[0],v.p[1],v.p[2]),t:new THREE.Vector3(v.t[0],v.t[1],v.t[2])};
+    if(instant){ camera.position.copy(goal.p); controls.target.copy(goal.t); goal=null; controls.update(); }
+    Array.prototype.forEach.call(document.querySelectorAll('#views .btn'),function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-v')===name?'true':'false'); });
+  }
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Array.prototype.forEach.call(document.querySelectorAll('#views .btn'),function(b){
+    b.addEventListener('click',function(){ setView(b.getAttribute('data-v'),reduce); });
+  });
+  controls.addEventListener('start',function(){ goal=null; });
+
+  /* ---------- toggles ---------- */
+  var flags={lbl:true,lemon:true,rent:true,fruit:true};
+  function bindToggle(id,key,obj){
+    var el=document.getElementById(id);
+    el.addEventListener('change',function(){ flags[key]=el.checked; if(obj) obj.visible=el.checked; });
+  }
+  bindToggle('tg-lemon','lemon',lemonGroup); bindToggle('tg-fruit','fruit',fruitGroup);
+  bindToggle('tg-rent','rent',rentGroup); bindToggle('tg-lbl','lbl',null);
+
+  /* ---------- areas table ---------- */
+  var plot=3200, items=[
+    ['สวนมะนาวและไม้ผล (≈ 32 × 28 ม., มะนาว '+N+' ต้น)',32*28],
+    ['บ้านหลัก (11 × 9 ม.)',99],
+    ['บ้านเช่า 5 หลัง (6 × 5 ม.)',150],
+    ['สระน้ำ',Math.round(Math.PI*7*9)],
+    ['ที่จอดรถ 4 คัน',Math.round(4.6*13.5)]
+  ];
+  var used=0, rows='';
+  items.forEach(function(r){ used+=r[1]; rows+='<tr><td>'+r[0]+'</td><td>'+Math.round(r[1]/4)+'</td></tr>'; });
+  rows+='<tr><td>ทางเดิน สนาม และพื้นที่ว่าง</td><td>'+Math.round((plot-used)/4)+'</td></tr>';
+  document.getElementById('areas').innerHTML=rows;
+
+  /* ---------- loop ---------- */
+  var needle=document.getElementById('needle');
+  function resize(){
+    var w=stage.clientWidth,h=stage.clientHeight; if(!w||!h) return;
+    renderer.setSize(w,h,false); camera.aspect=w/h;
+    camera.fov=w/h<1?60:45; camera.updateProjectionMatrix();
+  }
+  if(window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize',resize);
+  resize(); setView('aerial',true);
+
+  var pv=new THREE.Vector3();
+  function frame(){
+    requestAnimationFrame(frame);
+    if(document.hidden) return;
+    if(goal){
+      camera.position.lerp(goal.p,.07); controls.target.lerp(goal.t,.07);
+      if(camera.position.distanceTo(goal.p)<.15&&controls.target.distanceTo(goal.t)<.15) goal=null;
+    }
+    controls.update();
+    var w=stage.clientWidth,h=stage.clientHeight;
+    labelDefs.forEach(function(d){
+      var show=flags.lbl&&(!d.g||flags[d.g]);
+      if(!show){ d.el.hidden=true; return; }
+      pv.copy(d.v).project(camera);
+      if(pv.z>1||pv.z<-1||Math.abs(pv.x)>1.1||Math.abs(pv.y)>1.1){ d.el.hidden=true; return; }
+      d.el.hidden=false;
+      d.el.style.transform='translate('+((pv.x*.5+.5)*w).toFixed(1)+'px,'+((-pv.y*.5+.5)*h).toFixed(1)+'px) translate(-50%,-100%)';
+    });
+    needle.setAttribute('transform','rotate('+(controls.getAzimuthalAngle()*180/Math.PI).toFixed(1)+' 20 20)');
+    renderer.render(scene,camera);
+  }
+  frame();
+})();
 </script>
-</body>
-</html>
+
+</body></html>
