@@ -19,28 +19,28 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .bar button{flex:1 1 auto;font:600 13px 'Noto Sans Thai',system-ui,sans-serif;padding:11px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
 .bar button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 .bar button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-#leg{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.7;max-width:46vw}
+#leg{position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 84px);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12px;line-height:1.7;max-width:50vw}
 #leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 #compass{position:fixed;left:12px;top:calc(env(safe-area-inset-top,0px) + 84px);width:44px;height:44px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700}
-#compass span{display:block;transition:transform .1s}
+#compass span{display:block}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="top"><h1>บ้านสวนมะนาว 2 ไร่</h1><p>หน้ากว้าง 40 ม. ลึก 80 ม. · หน้าบ้านหันทิศตะวันออก (ด้านล่างของภาพ) · ลากเพื่อหมุน</p></div>
+<div class="top"><h1>บ้านสวนมะนาว 2 ไร่ · 8 หลัง</h1><p>บ้าน 7×6 ม. (42 ตร.ม.) + ที่จอดรถ 3×5.5 ม. ต่อหลัง · หน้าที่ดินหันตะวันออก (ล่างภาพ)</p></div>
 <div id="compass"><span id="n">N</span></div>
 <div id="leg">
+<i style="background:#f4f1ea;border:1px solid #888"></i>บ้าน 8 หลัง (ฝั่งละ 4)<br>
+<i style="background:#6b4a2b"></i>ที่จอดรถ + ทางเข้าออกทุกหลัง<br>
 <i style="background:#e2c64a"></i>มะนาว 20 ต้น<br>
-<i style="background:#f4f1ea;border:1px solid #888"></i>บ้านหลัก 1 หลัง<br>
-<i style="background:#c9a77a"></i>บ้านเช่า 5 หลัง<br>
 <i style="background:#4aa3c7"></i>สระ + คูน้ำรูปตัว L<br>
-<i style="background:#e0872e"></i>ไม้ผลด้านใต้
+<i style="background:#e0872e"></i>ไม้ผลหลังบ้าน<br><i style="background:#d9c3a0"></i>คาเฟ่/บาร์ริมสระ<br><i style="background:#1b2e4f"></i>โซลาร์เซลล์ + โรงเพาะกล้า
 </div>
 <div class="bar">
 <button data-v="air" class="on">มุมสูง</button>
-<button data-v="east">หน้าบ้าน (ตะวันออก)</button>
-<button data-v="walk">เดินในสวน</button>
-<button data-v="spin">หมุนอัตโนมัติ</button>
+<button data-v="east">หน้าที่ดิน</button>
+<button data-v="walk">เดินในซอย</button>
+<button data-v="spin">หมุน</button>
 <button id="nt">กลางคืน</button>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -53,100 +53,84 @@ const cam=new T.PerspectiveCamera(50,1,.5,600);
 const hemi=new T.HemisphereLight(0xffffff,0x6a8a55,.85);S.add(hemi);
 const sun=new T.DirectionalLight(0xfff2d8,.9);sun.position.set(60,90,-30);sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-70;sc.right=70;sc.top=70;sc.bottom=-70;sc.far=250;S.add(sun);
-function box(w,h,d,c,x,y,z,o){const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial(Object.assign({color:c},o||{})));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;S.add(m);return m}
-// พื้นที่: x ตะวันออก(+) ตะวันตก(-), z ใต้(+) เหนือ(-)
-box(500,.2,500,0x7fa060,0,-.2,0);
-box(40,.3,80,0x8cb86a,0,0,0);
-// คูน้ำตัว L + ถนน 5 ม. ทิศตะวันออกและใต้
-const wo={transparent:true,opacity:.85};
-box(2.5,.3,82.5,0x4aa3c7,21.25,-.05,1.25,wo);
-box(42.5,.3,2.5,0x4aa3c7,1.25,-.05,41.25,wo);
-box(50,.25,5,0x55585c,5,0,46);
-for(let x=-18;x<30;x+=6)box(2.5,.05,.3,0xf2f2f2,x,.2,46);
-// ถนนทางเข้าในที่ดิน (ซ้าย) + สะพาน + เสาประตู
-box(4,.2,80,0x6d6f73,-18,.1,0);
-for(let z=-38;z<40;z+=6)box(.25,.03,2.5,0xf2f2f2,-18,.22,z);
-box(4,.3,2.6,0x8a8a8a,-18,.05,41.2);
-box(1,2.2,1,0x9a7650,-20.2,1.1,39.5);box(1,2.2,1,0x9a7650,-15.8,1.1,39.5);
-// ต้นไม้
-function tree(x,z,leaf,s){s=s||1;box(.35*s,1.6*s,.35*s,0x6b4a2b,x,.8*s,z);
-const m=new T.Mesh(new T.SphereGeometry(1.3*s,12,10),new T.MeshLambertMaterial({color:leaf}));m.position.set(x,2.4*s,z);m.castShadow=true;S.add(m);
-return m}
-for(let r=0;r<4;r++)for(let c=0;c<5;c++){const t=tree(-8+c*6,-37+r*5.5,0x3f8a34,.9);
-const f=new T.Mesh(new T.SphereGeometry(.2,6,6),new T.MeshLambertMaterial({color:0xe2c64a}));f.position.set(-8+c*6+.9,2.1,-37+r*5.5+.5);S.add(f);
-const g=f.clone();g.position.set(-8+c*6-.8,2.8,-37+r*5.5-.5);S.add(g)}
-for(let c=0;c<5;c++){tree(-8+c*6,31,0x2f7a3a,1.1);tree(-5+c*6,36,[0xe0872e,0xc8402e,0xe8b830,0x9a3f7a,0xe0872e][c],1)}
-for(let z=-36;z<38;z+=9)tree(-22.5,z,0x4a9a3a,1.2);
-// บ้านสไตล์โมเดิร์นทรอปิคอล หันหน้าไปทางตะวันออก (+x)
-const glass=[];function home(x,z,w,d,h,col){box(w,h,d,col,x,h/2,z);
-box(w+2.4,.35,d+2.4,0x6b4a2b,x,h+.2,z);
-box(w+1.6,.4,d+1.6,0xb8b8b4,x,h+.55,z,{});
-glass.push(box(w*.7,h*.62,.15,0x2a4a5e,x,h*.4,z+d/2+.05,{transparent:true,opacity:.8}));
-box(w+.6,.2,2.2,0xa9835a,x,.1,z+d/2+1.1);
-box(.2,h,.2,0x6b4a2b,x-w/2+.3,h/2,z+d/2+2.1);box(.2,h,.2,0x6b4a2b,x+w/2-.3,h/2,z+d/2+2.1)}
-home(4,-10,12,8,3.4,0xf4f1ea);
-[[-6,3],[-6,15],[16,3],[16,15],[16,26]].forEach(p=>home(p[0],p[1],6,5,2.8,0xc9a77a));
-// สระน้ำ + ศาลา
-box(11,.25,15,0xb8b8b4,4,.1,10);box(10,.3,14,0x4aa3c7,4,.15,10,wo);
-box(4,.2,3,0xa9835a,4,.1,1.5);box(4.6,.25,3.6,0x6b4a2b,4,2.6,1.5);
-[[2.2,.2],[5.8,.2],[2.2,2.8],[5.8,2.8]].forEach(p=>box(.2,2.5,.2,0x6b4a2b,p[0],1.3,p[1]));
-// ที่จอดรถข้างถนนทางเข้า
-const cc=[0xd04a3c,0x3c6ed0,0xe8e8e8,0x333333];
-cc.forEach((c,i)=>{const z=-2+i*4.5;box(2,.8,4,c,-13.5,.6,z);box(1.7,.7,2,0xbfd8e6,-13.5,1.3,z)});
-box(5,.1,20,0xaaa9a4,-13.5,.07,5);
-function lab(t,x,z,c){const k=document.createElement('canvas');k.width=512;k.height=96;const g=k.getContext('2d');g.fillStyle=c;g.fillRect(0,0,512,96);g.fillStyle='#fff';g.font='bold 44px sans-serif';g.textAlign='center';g.fillText(t,256,64);const s=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(k)}));s.scale.set(16,3,1);s.position.set(x,5,z);S.add(s)}
-lab('ตะวันออก · หน้าบ้าน',0,53,'#3f7d2c');lab('ตะวันตก',0,-45,'#666');lab('เหนือ',34,0,'#666');lab('ใต้',-34,0,'#666');
 const rnd=(a,b)=>a+Math.random()*(b-a);
+function box(w,h,d,c,x,y,z,o){const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshLambertMaterial(Object.assign({color:c},o||{})));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;S.add(m);return m}
 function ball(r,c,x,y,z,sy){const m=new T.Mesh(new T.SphereGeometry(r,10,8),new T.MeshLambertMaterial({color:c}));m.position.set(x,y,z);if(sy)m.scale.y=sy;m.castShadow=true;S.add(m);return m}
-// มะนาว: พุ่มใบเพิ่ม + ลูกสีเหลือง
-for(let r=0;r<4;r++)for(let c=0;c<5;c++){const x=-8+c*6,z=-37+r*5.5;
-ball(.8,0x347a2c,x-.7,2.5,z+.5);ball(.8,0x4a9a3a,x+.6,2.9,z-.4);ball(.7,0x3a8a30,x,3.3,z+.2);
-for(let i=0;i<6;i++)ball(.16,0xf0d84a,x+rnd(-1.3,1.3),rnd(1.7,3.4),z+rnd(-1.3,1.3),1.3)}
-// ไม้ผลด้านใต้: พุ่ม + ผล
-[0xe0872e,0xc8402e,0xe8b830,0x9a3f7a,0xe0872e].forEach((c,i)=>{const x=-5+i*6;ball(.9,0x2f7a3a,x-.6,3.1,36);for(let k=0;k<5;k++)ball(.2,c,x+rnd(-1.2,1.2),rnd(2,3.6),36+rnd(-1.2,1.2))});
-// รั้วไม้รอบที่ดิน
-function fence(x1,z1,x2,z2){const L=Math.hypot(x2-x1,z2-z1),a=Math.atan2(z2-z1,x2-x1),n=Math.round(L/2.5);
+// x: เหนือ(+)/ใต้(-)  z: ตะวันออก(+)/ตะวันตก(-)  ที่ดิน 40×80 ม.
+box(500,.2,500,0x7fa060,0,-.2,0);box(40,.3,80,0x8cb86a,0,0,0);
+const wo={transparent:true,opacity:.85};
+box(2.5,.3,82.5,0x4aa3c7,21.25,-.05,1.25,wo);box(42.5,.3,2.5,0x4aa3c7,1.25,-.05,41.25,wo);
+box(60,.25,5,0x55585c,0,0,45);
+for(let x=-26;x<30;x+=6)box(2.5,.05,.3,0xf2f2f2,x,.2,45);
+box(.4,.5,82,0xb8b4a8,20.15,.2,0);box(42,.5,.4,0xb8b4a8,0,.2,40.15);
+// ซอยกลาง 4 ม. + สะพาน + ประตู
+box(4,.2,44,0x6d6f73,0,.1,18);
+for(let z=-1;z<38;z+=6)box(.25,.03,2.5,0xf2f2f2,0,.22,z);
+box(4,.3,2.6,0x8a8a8a,0,.05,41.2);box(.12,.8,2.6,0x8a8a8a,-2,.6,41.2);box(.12,.8,2.6,0x8a8a8a,2,.6,41.2);
+box(.8,2.2,.8,0x9a7650,-2.6,1.1,39.5);box(.8,2.2,.8,0x9a7650,2.6,1.1,39.5);box(6,.4,.5,0x9a7650,0,2.4,39.5);
+// รั้ว
+function fence(x1,z1,x2,z2){const L=Math.hypot(x2-x1,z2-z1),a=Math.atan2(z2-z1,x2-x1),n=Math.max(1,Math.round(L/2.5));
 for(let i=0;i<=n;i++)box(.18,1.1,.18,0x8a6a45,x1+(x2-x1)*i/n,.55,z1+(z2-z1)*i/n);
 [.4,.9].forEach(y=>{const m=box(L,.1,.06,0xa07c52,(x1+x2)/2,y,(z1+z2)/2);m.rotation.y=-a})}
-fence(-20.4,-40,20,-40);fence(19.8,-40,19.8,40);fence(-15.5,39.8,19.8,39.8);fence(-20.4,-40,-20.4,38);
-// ทางเดินหิน + คันคู + ราวสะพาน + คานประตู
-box(2,.06,40,0xc9c2b4,11.2,.05,12);box(1.4,.06,40,0xc9c2b4,-10,.05,12);box(2,.06,6.3,0xc9c2b4,4,.05,-.65);
-box(.4,.5,82,0xb8b4a8,20.15,.2,0);box(42,.5,.4,0xb8b4a8,0,.2,40.15);
-box(.12,.8,2.6,0x8a8a8a,-19.95,.6,41.2);box(.12,.8,2.6,0x8a8a8a,-16.05,.6,41.2);box(4.8,.4,.4,0x9a7650,-18,2.4,39.5);
-for(let i=0;i<70;i++){if(i%2)box(.05,rnd(.9,1.5),.05,0x5f8a3a,rnd(21,22.3),.7,rnd(-38,40));else box(.05,rnd(.9,1.5),.05,0x5f8a3a,rnd(-16,20),.7,rnd(40.6,42))}
-// ไฟทางเดิน
-const lamps=[];for(let z=-34;z<=38;z+=12){box(.15,3,.15,0x333333,-15.7,1.5,z);const l=new T.Mesh(new T.SphereGeometry(.3,8,8),new T.MeshBasicMaterial({color:0xbbbbbb}));l.position.set(-15.7,3.1,z);S.add(l);lamps.push(l)}
-// รายละเอียดบ้าน
-function extras(x,z,w,d,h){const f=z+d/2;
-box(1,h*.68,.16,0x5a3d22,x-w*.3,h*.34,f+.1);
-box(.15,h*.35,d*.35,0x2a4a5e,x+w/2+.05,h*.55,z);box(.15,h*.35,d*.35,0x2a4a5e,x-w/2-.05,h*.55,z);
-for(let i=0;i<5;i++)box(.1,h*.85,.12,0xa9835a,x+w/2-1.5+i*.3,h*.45,f+1.6);
-box(.8,.5,.35,0xe8e8e8,x-w/2+.8,.7,z-d/2-.2);
-box(1.6,.12,1,0x223a52,x-w*.2,h+1,z);
-box(w*.4,.12,.8,0xb8b8b4,x-w*.3,.06,f+2.6);
-box(.9,.4,.9,0x8a8680,x+w/2+.9,.2,f+.9);ball(.6,0x2e8a3a,x+w/2+.9,.75,f+.9);
-ball(.35,0xe85a8a,x-w/2-.8,.4,f+.6);ball(.35,0xf0c030,x-w/2-.8,.4,f+1.4)}
-extras(4,-10,12,8,3.4);[[-6,3],[-6,15],[16,3],[16,15],[16,26]].forEach(p=>extras(p[0],p[1],6,5,2.8));
-// โรงจอดรถข้างบ้านหลัก
-box(5,.25,4,0x6b4a2b,14,2.7,-10);[[11.8,-11.8],[16.2,-11.8],[11.8,-8.2],[16.2,-8.2]].forEach(p=>box(.18,2.6,.18,0x6b4a2b,p[0],1.3,p[1]));
-box(2,.8,4,0x3c6ed0,14,.6,-10);box(1.7,.7,2,0xbfd8e6,14,1.3,-10);
-// สระ: บัว เก้าอี้พักผ่อน ร่ม
-for(let i=0;i<8;i++){const p=new T.Mesh(new T.CylinderGeometry(.4,.4,.05,10),new T.MeshLambertMaterial({color:0x3f8a44}));p.position.set(rnd(-.5,8.5),.33,rnd(3.8,16));S.add(p);if(i%3==0)ball(.15,0xf08ab0,p.position.x,.42,p.position.z)}
-box(.8,.25,1.8,0xf4f4f0,-2.8,.3,7.5);box(.8,.25,1.8,0xf4f4f0,-2.8,.3,10.2);
-box(.06,2.4,.06,0x666666,-2.8,1.3,8.8);{const u=new T.Mesh(new T.ConeGeometry(1.8,.5,12),new T.MeshLambertMaterial({color:0xe0872e}));u.position.set(-2.8,2.6,8.8);u.castShadow=true;S.add(u)}
-// ต้นไม้ไกลรอบฉาก
+fence(-19.8,-40,19.8,-40);fence(19.8,-40,19.8,39.8);fence(-19.8,-40,-19.8,39.8);fence(-19.8,39.8,-3.2,39.8);fence(3.2,39.8,19.8,39.8);
+// บ้าน 7×6 ม. หันหน้าเข้าซอย + ที่จอดรถ 3×5.5 ม. + ทางเข้าออกรถ
+const glass=[];
+function house(zc,dir){const xc=-dir*6.5,hz=zc-1.5;
+box(6,3,7,0xf4f1ea,xc,1.5,hz);box(8.2,.3,9,0x6b4a2b,xc,3.15,hz);box(7.2,.35,8,0xb8b8b4,xc,3.5,hz);
+glass.push(box(.15,1.9,4.6,0x2a4a5e,xc+dir*3.05,1.4,hz-.4,{transparent:true,opacity:.8}));
+box(.18,2.1,.9,0x5a3d22,xc+dir*3.06,1.05,hz+2.7);box(1.2,.2,4.6,0xa9835a,-dir*2.9,.1,hz-.4);
+box(.8,.5,.35,0xe8e8e8,xc,.7,hz-3.7);ball(.5,0x2e8a3a,-dir*3.1,.5,hz-3.4);
+const cx=-dir*5.25,cz=zc+3.5;
+box(5.8,.06,3.2,0xb8b8b4,-dir*4.9,.04,cz);box(5.5,.2,3.2,0x6b4a2b,cx,2.6,cz);
+[[-2.6,-1.4],[2.6,-1.4],[-2.6,1.4],[2.6,1.4]].forEach(p=>box(.15,2.5,.15,0x6b4a2b,cx+p[0],1.25,cz+p[1]));
+box(4.2,.75,1.8,[0xd04a3c,0x3c6ed0,0xe8e8e8,0x333333][Math.floor(rnd(0,4))],cx,.55,cz);box(2,.6,1.6,0xbfd8e6,cx,1.2,cz)}
+[5,15,25,35].forEach(z=>{house(z,1);house(z,-1)});
+// ต้นไม้
+function tree(x,z,leaf,s){s=s||1;box(.35*s,1.6*s,.35*s,0x6b4a2b,x,.8*s,z);ball(1.3*s,leaf,x,2.4*s,z)}
+for(let r=0;r<4;r++)for(let c=0;c<5;c++){const x=-12+c*6,z=-37+r*5.5;tree(x,z,0x3f8a34,.9);
+ball(.8,0x347a2c,x-.7,2.5,z+.5);ball(.8,0x4a9a3a,x+.6,2.9,z-.4);ball(.7,0x3a8a30,x,3.3,z+.2);
+for(let i=0;i<6;i++)ball(.16,0xf0d84a,x+rnd(-1.3,1.3),rnd(1.7,3.4),z+rnd(-1.3,1.3),1.3)}
+const fc=[0xe0872e,0xc8402e,0xe8b830,0x9a3f7a,0x3c9a4a];
+[-1,1].forEach(d=>{for(let i=0;i<6;i++){const x=d*14.2,z=3+i*6.8,c=fc[(i+(d>0?2:0))%5];tree(x,z,0x2f7a3a,1);
+for(let k=0;k<4;k++)ball(.2,c,x+rnd(-1.1,1.1),rnd(2,3.4),z+rnd(-1.1,1.1))}});
+// สระ + ศาลา
+box(15,.25,8,0xb8b8b4,0,.1,-9);box(13.6,.3,6.6,0x4aa3c7,0,.17,-9,wo);
+for(let i=0;i<7;i++){const p=new T.Mesh(new T.CylinderGeometry(.4,.4,.05,10),new T.MeshLambertMaterial({color:0x3f8a44}));p.position.set(rnd(-6,6),.35,rnd(-11.5,-6.5));S.add(p);if(i%3==0)ball(.15,0xf08ab0,p.position.x,.44,p.position.z)}
+box(4,.2,3,0xa9835a,12.5,.1,-9);box(4.6,.25,3.6,0x6b4a2b,12.5,2.6,-9);
+[[-1.8,-1.2],[1.8,-1.2],[-1.8,1.2],[1.8,1.2]].forEach(p=>box(.2,2.5,.2,0x6b4a2b,12.5+p[0],1.3,-9+p[1]));
+// ไฟซอย + ต้นกก
+const lamps=[];[2,14,26,38].forEach(z=>{box(.15,3,.15,0x333333,2.5,1.5,z);const l=new T.Mesh(new T.SphereGeometry(.3,8,8),new T.MeshBasicMaterial({color:0xbbbbbb}));l.position.set(2.5,3.1,z);S.add(l);lamps.push(l)});
+for(let i=0;i<70;i++){if(i%2)box(.05,rnd(.9,1.5),.05,0x5f8a3a,rnd(21,22.3),.7,rnd(-38,40));else box(.05,rnd(.9,1.5),.05,0x5f8a3a,rnd(-18,20),.7,rnd(40.6,42))}
+// คาเฟ่/บาร์ริมสระ
+box(7,3.2,5.5,0xd9c3a0,-14,1.6,-9);box(9,.3,7.5,0x6b4a2b,-14,3.35,-9);box(8,.35,6.5,0x8a5a32,-14,3.7,-9);
+glass.push(box(.15,2,4,0x2a4a5e,-10.45,1.4,-9,{transparent:true,opacity:.8}));
+box(.6,1.05,3.2,0x8a5a32,-10.2,.52,-9);box(.3,.3,2,0xe8e8e8,-10.2,1.2,-9);
+box(3,.2,8,0xa9835a,-9,.1,-9);
+function table(x,z,c){const t=new T.Mesh(new T.CylinderGeometry(.5,.5,.08,12),new T.MeshLambertMaterial({color:0xf4f4f0}));t.position.set(x,.8,z);t.castShadow=true;S.add(t);box(.08,.8,.08,0x555555,x,.4,z);box(.4,.4,.4,0x6b4a2b,x,.25,z-.9);box(.4,.4,.4,0x6b4a2b,x,.25,z+.9);box(.06,2.2,.06,0x666666,x,1.1,z);const u=new T.Mesh(new T.ConeGeometry(1.3,.5,12),new T.MeshLambertMaterial({color:c}));u.position.set(x,2.3,z);u.castShadow=true;S.add(u)}
+table(-8.6,-11.5,0xe0872e);table(-8.6,-9,0x3c9a4a);table(-8.6,-6.5,0xd04a3c);
+{const k=document.createElement('canvas');k.width=512;k.height=96;const g=k.getContext('2d');g.fillStyle='#6b4a2b';g.fillRect(0,0,512,96);g.fillStyle='#fff';g.font='bold 44px sans-serif';g.textAlign='center';g.fillText('คาเฟ่ & บาร์',256,64);const s=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(k)}));s.scale.set(6,1.1,1);s.position.set(-10.6,4.9,-9);S.add(s)}
+// สะพานไม้ยื่นกลางสระ + เก้าอี้พักผ่อน + ไฟรอบสระ
+box(7,.15,1.6,0xa9835a,-3.5,.45,-9);
+[-11.8,-9.5,-7.2].forEach(z=>box(.8,.25,1.8,0xf4f4f0,8.8,.3,z));
+[[-8,-13.4],[8,-13.4],[-8,-4.6],[8,-4.6],[0,-13.4],[0,-4.6]].forEach(p=>{box(.12,2.5,.12,0x333333,p[0],1.25,p[1]);const l=new T.Mesh(new T.SphereGeometry(.25,8,8),new T.MeshBasicMaterial({color:0xbbbbbb}));l.position.set(p[0],2.6,p[1]);S.add(l);lamps.push(l)});
+// โซลาร์เซลล์บนหลังคาบ้าน
+[5,15,25,35].forEach(z=>[1,-1].forEach(d=>{const m=box(4,.08,2.4,0x1b2e4f,-d*6.5,3.95,z-1.5);m.rotation.z=d*.18}));
+// โรงเพาะกล้ามะนาว + ถังน้ำ
+box(4,2.2,6,0xcfe9e6,16.8,1.1,-29,{transparent:true,opacity:.35});box(4.2,.15,6.2,0x6b4a2b,16.8,2.25,-29);
+for(let i=0;i<6;i++)ball(.3,0x3f8a34,15.8+(i%2)*2,.5,-31.5+Math.floor(i/2)*2.2);
+{const w=new T.Mesh(new T.CylinderGeometry(1,1,2,14),new T.MeshLambertMaterial({color:0x3a6ea5}));w.position.set(17.5,3.2,-22);w.castShadow=true;S.add(w);[[-.6,-.6],[.6,-.6],[-.6,.6],[.6,.6]].forEach(p=>box(.12,2.2,.12,0x555555,17.5+p[0],1.1,-22+p[1]))}
 for(let i=0;i<60;i++){const a=rnd(0,6.283),r=rnd(95,150);ball(rnd(4,8),0x5f9250,Math.cos(a)*r,rnd(2,4),Math.sin(a)*r,.9)}
-// กลางวัน / กลางคืน
-function setNight(n){const c=n?0x0f1a2e:0xcfe6f2;S.background.set(c);S.fog.color.set(c);hemi.intensity=n?.3:.85;sun.intensity=n?.12:.9;sun.color.set(n?0x8aa4ff:0xfff2d8);glass.forEach(g=>g.material.emissive.set(n?0xffc850:0x000000));lamps.forEach(l=>l.material.color.set(n?0xffe9a0:0xbbbbbb))}
+function lab(t,x,z,c){const k=document.createElement('canvas');k.width=512;k.height=96;const g=k.getContext('2d');g.fillStyle=c;g.fillRect(0,0,512,96);g.fillStyle='#fff';g.font='bold 44px sans-serif';g.textAlign='center';g.fillText(t,256,64);const s=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(k)}));s.scale.set(16,3,1);s.position.set(x,5,z);S.add(s)}
+lab('ตะวันออก · หน้าที่ดิน',0,53,'#3f7d2c');lab('ตะวันตก',0,-45,'#666');lab('เหนือ',34,0,'#666');lab('ใต้',-34,0,'#666');
+function setNight(n){const c=n?0x0f1a2e:0xcfe6f2;S.background.set(c);S.fog.color.set(c);hemi.intensity=n?.3:.85;sun.intensity=n?.12:.9;sun.color.set(n?0x8aa4ff:0xfff2d8);glass.forEach(g=>g.material.emissive.set(n?0xffc850:0));lamps.forEach(l=>l.material.color.set(n?0xffe9a0:0xbbbbbb))}
 let night=false;document.getElementById('nt').onclick=function(){night=!night;this.classList.toggle('on',night);this.textContent=night?'กลางวัน':'กลางคืน';setNight(night)};
-// กล้อง (orbit เอง)
+// กล้อง
 let tg=new T.Vector3(0,0,5),th=1.5708,ph=.9,di=105,spin=false,goal=null;
 function place(){cam.position.set(tg.x+di*Math.sin(ph)*Math.cos(th),tg.y+di*Math.cos(ph),tg.z+di*Math.sin(ph)*Math.sin(th));cam.lookAt(tg);
 document.getElementById('n').style.transform='rotate('+(90-(th-Math.PI/2)*180/Math.PI)+'deg)'}
-const V={air:{th:1.5708,ph:.9,di:105,t:[0,0,5]},east:{th:1.5708,ph:1.3,di:90,t:[0,3,0]},walk:{th:1.5708,ph:1.42,di:30,t:[0,2,15]}};
-function go(k){spin=false;goal=V[k]}
+const V={air:{th:1.5708,ph:.9,di:105,t:[0,0,5]},east:{th:1.5708,ph:1.3,di:75,t:[0,3,15]},walk:{th:1.5708,ph:1.45,di:22,t:[0,2,28]}};
 document.querySelectorAll('.bar button[data-v]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.bar button[data-v]').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-if(b.dataset.v==='spin'){spin=true;goal=null}else go(b.dataset.v)});
+if(b.dataset.v==='spin'){spin=true;goal=null}else{spin=false;goal=V[b.dataset.v]}});
 const pts=new Map();let pd=0;
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,e);goal=null});
 cv.addEventListener('pointerup',e=>pts.delete(e.pointerId));
